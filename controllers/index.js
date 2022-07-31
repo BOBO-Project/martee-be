@@ -1,7 +1,9 @@
 const BannerController = require("./bannerController");
 const AboutUsController = require("./aboutUsController");
+const PortoController = require("./portoController");
 
 module.exports = {
   BannerController,
-  AboutUsController
+  AboutUsController,
+  PortoController
 }

@@ -64,9 +64,9 @@ class BannerController {
       if(!bannerImages.length) throw {message: "Image not found"}
 
       //Destroy images
-      if (bannerImages?.length > 0) {
+      if (bannerImages.length > 0) {
         await bannerImages.forEach(img => {
-          const path = img?.dataValues?.image_url
+          const path = img.dataValues.image_url
           fs.unlink(path, (err) => console.log(err))
         })
 

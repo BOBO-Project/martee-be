@@ -64,9 +64,9 @@ class AboutUsController {
       if(!aboutUsImages.length) throw {message: "Image not found"}
 
       //Destroy images
-      if (aboutUsImages?.length > 0) {
+      if (aboutUsImages.length > 0) {
         await aboutUsImages.forEach(img => {
-          const path = img?.dataValues?.image_url
+          const path = img.dataValues.image_url
           fs.unlink(path, (err) => console.log(err))
         })
 
