@@ -19,9 +19,10 @@ class BannerController {
 
       const filteredFile = req.files.filter((_, idx) => idx < (quantity - bannerImages.length))
 
-      const images = filteredFile.map((file) => {
+      const images = filteredFile.map((file, idx) => {
         return {
-          image_url: file.path
+          image_url: file.path,
+          position: idx + 1
         }
       })
 
@@ -57,11 +58,70 @@ class BannerController {
     }
   }
 
+  static async updateBannerImages(req, res, next) {
+    try {
+      const id = req.params.id;
+      const incomingFiles = req.file;
+
+      if (!incomingFiles) {
+        throw { message: "Require image" }
+      }
+
+      const getCurrentBanner = await Banner.findByPk(id)
+      if (!getCurrentBanner) {
+        throw { message: "Banner not found" }
+      }
+
+      //Remove existing image
+      fs.unlink(getCurrentBanner.dataValues.image_url, (err) => console.log(err))
+
+      //Upload new image
+      const uploadImages = await Banner.update({ image_url: incomingFiles.path }, { where: { id } })
+      if (!uploadImages) throw { message: "Failed to upload images" }
+
+      return res.status(200).json({
+        message: "Successfuly remove image"
+      })
+    } catch (error) {
+      return res.status(400).json({
+        message: error.message || "Failed to upload images",
+        error: 400
+      })
+    }
+  }
+
+  static async updateBannerPosition(req, res, next) {
+    try {
+      const id = req.params.id;
+      const { position } = req.body || {};
+
+      if (!position) throw { message: "Required position" }
+
+      const currentPosition = await Banner.findByPk(id)
+      const destinationPosition = await Banner.findOne({ where: position })
+
+      //uploadDestinationPosition
+      await Banner.update({ position: currentPosition.position }, { where: { id: destinationPosition.id } })
+
+      //uploadcurrentPosition
+      await Banner.update({ position }, { where: { id } })
+
+      return res.status(200).json({
+        message: "Successfully upload position"
+      })
+    } catch (error) {
+      return res.status(400).json({
+        message: error.message || "Failed to upload images",
+        error: 400
+      })
+    }
+  }
+
   static async deleteImages(req, res, next) {
     try {
       const id = req.params.id;
       const bannerImages = await Banner.findAll({ where: { id } })
-      if(!bannerImages.length) throw {message: "Image not found"}
+      if (!bannerImages.length) throw { message: "Image not found" }
 
       //Destroy images
       if (bannerImages.length > 0) {
