@@ -7,16 +7,20 @@ const { fileStorage, fileFilter } = require("../helpers")
 /* CONTROLLERS */
 const { PortoController } = require("../controllers");
 
-routes.get('/homepage', PortoController.getHomepagePorto)
-routes.post('/page', PortoController.getPortoPage)
-routes.get('/detail/:id', PortoController.getHomepagePorto)
-
+//Porto Details
 routes.post('/detail', PortoController.validatePortoInput, PortoController.createPorto)
 routes.put('/detail/:id', PortoController.checkIfPortoExist, PortoController.updatePorto)
 routes.delete('/detail/:id', PortoController.checkIfPortoExist, PortoController.deletePorto)
+routes.get('/detail/:id', PortoController.getPortoDetail)
 
-routes.post('/image/:id', multer({ storage: fileStorage, fileFilter }).array("image", 20), PortoController.addPortoImage)
-routes.post('/main_image/:id/:img_id', PortoController.checkIfImageExist, PortoController.setMainImage)
+//Porto Details Image
+routes.post('/image/:id', multer({ storage: fileStorage, fileFilter }).array("image", 3), PortoController.addPortoImage)
+routes.patch('/image/:id/:img_id', multer({ storage: fileStorage, fileFilter }).single("image"), PortoController.updatePortoImages)
 routes.delete('/image/:id/:img_id', PortoController.deleteImage)
+routes.patch('/main_image/:id/:img_id', PortoController.checkIfImageExist, PortoController.setMainImage)
+
+routes.get('/homepage', PortoController.getHomepagePorto)
+routes.post('/page', PortoController.getPortoPage)
+
 
 module.exports = routes;
