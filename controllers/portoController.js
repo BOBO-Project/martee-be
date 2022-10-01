@@ -1,4 +1,5 @@
 const fs = require('fs');
+const url = require('url');
 
 const { Porto, PortoImage } = require("../models");
 const { removeImage, imageQuantityChecker } = require("../helpers");
@@ -280,61 +281,53 @@ class PortoController {
     }
   }
 
-  /* Web Porto Services */
-  static async getHomepagePorto(req, res, next) {
-    try {
-      const getPorto = await Porto.findAll({
-        include: [PortoImage],
-        limit: 8
-      })
-
-      return res.status(200).json({
-        message: "Successfully get porto",
-        data: getPorto
-      })
-    } catch (error) {
-      return res.status(400).json({
-        message: "Failed to get porto",
-        status_code: 400
-      })
-    }
-  }
-
-  static async getPortoPage(req, res, next) {
-    try {
-      const page = req.body.page || 1;
-      let limit = 20
-      let offset = 0 + (page - 1) * limit
-
-      const getPorto = await Porto.findAll({
-        include: [PortoImage],
-        limit,
-        offset
-      })
-
-      return res.status(200).json({
-        message: "Successfully get porto",
-        data: getPorto
-      })
-    } catch (error) {
-      return res.status(400).json({
-        message: "Failed to get porto",
-        status_code: 400
-      })
-    }
-  }
-
   /* GET PORTO WITH QUERY */
   static async getPorto(req, res, next) {
     try {
-      const getPorto = await Porto.findAll({
+      /**
+       * QUERY
+       * limit: <number>
+       * offset?: <number>
+       * page?: <number>
+       * category?: <string>
+       */
+
+      const url_parts = url.parse(req.url, true);
+      const { limit = 20, offset = 2, page = 1, category = "" } = url_parts.query;
+
+      let options = {
+        limit,
+        offset: (page - 1) * limit
+      };
+
+      let where = { category }
+      if(!category){
+        where = {}
+      }
+      const getPorto = await Porto.findAndCountAll({
         include: [PortoImage],
-        limit: 8
+        order: [['updatedAt', 'DESC']],
+        ...options,
+        where
       })
+
+      if(!getPorto){
+        return res.status(204).json({
+          message: "Successfully get porto",
+          data: [],
+          totalPages: 0,
+          currentPage: 1,
+          totalRecord: 0
+        })
+      }
 
       return res.status(200).json({
         message: "Successfully get porto",
-        data: getPorto
+        data: getPorto.rows,
+        totalPages: Math.ceil(getPorto.count / limit),
+        currentPage: page,
+        totalRecord: getPorto.count
+
       })
     } catch (error) {
       return res.status(400).json({

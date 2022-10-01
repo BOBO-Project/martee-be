@@ -19,8 +19,7 @@ routes.patch('/image/:id/:img_id', multer({ storage: fileStorage, fileFilter }).
 routes.delete('/image/:id/:img_id', PortoController.deleteImage)
 routes.patch('/main_image/:id/:img_id', PortoController.checkIfImageExist, PortoController.setMainImage)
 
-routes.get('/homepage', PortoController.getHomepagePorto)
-routes.post('/page', PortoController.getPortoPage)
+routes.get('/', PortoController.getPorto)
 
 
 module.exports = routes;
