@@ -5,19 +5,19 @@ const multer = require("multer");
 const { fileStorage, fileFilter } = require("../helpers")
 
 /* CONTROLLERS */
-const { PortoController } = require("../controllers");
+const { PortoController, UserController } = require("../controllers");
 
 //Porto Details
-routes.post('/detail', PortoController.validatePortoInput, PortoController.createPorto)
-routes.put('/detail/:id', PortoController.checkIfPortoExist, PortoController.updatePorto)
-routes.delete('/detail/:id', PortoController.checkIfPortoExist, PortoController.deletePorto)
+routes.post('/detail', UserController.checkAuth, PortoController.validatePortoInput, PortoController.createPorto)
+routes.put('/detail/:id', UserController.checkAuth, PortoController.checkIfPortoExist, PortoController.updatePorto)
+routes.delete('/detail/:id', UserController.checkAuth, PortoController.checkIfPortoExist, PortoController.deletePorto)
 routes.get('/detail/:id', PortoController.getPortoDetail)
 
 //Porto Details Image
-routes.post('/image/:id', multer({ storage: fileStorage, fileFilter }).array("image", 3), PortoController.addPortoImage)
-routes.patch('/image/:id/:img_id', multer({ storage: fileStorage, fileFilter }).single("image"), PortoController.updatePortoImages)
-routes.delete('/image/:id/:img_id', PortoController.deleteImage)
-routes.patch('/main_image/:id/:img_id', PortoController.checkIfImageExist, PortoController.setMainImage)
+routes.post('/image/:id', UserController.checkAuth, multer({ storage: fileStorage, fileFilter }).array("image", 3), PortoController.addPortoImage)
+routes.patch('/image/:id/:img_id', UserController.checkAuth, multer({ storage: fileStorage, fileFilter }).single("image"), PortoController.updatePortoImages)
+routes.delete('/image/:id/:img_id', UserController.checkAuth, PortoController.deleteImage)
+routes.patch('/main_image/:id/:img_id', UserController.checkAuth, PortoController.checkIfImageExist, PortoController.setMainImage)
 
 routes.get('/', PortoController.getPorto)
 

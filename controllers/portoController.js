@@ -327,7 +327,6 @@ class PortoController {
         totalPages: Math.ceil(getPorto.count / limit),
         currentPage: page,
         totalRecord: getPorto.count
-
       })
     } catch (error) {
       return res.status(400).json({

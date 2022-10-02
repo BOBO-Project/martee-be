@@ -1,7 +1,7 @@
 const { User } = require('../models')
 
 /* HELPERS */
-const { verifyPassword, encodeToken, verifyToken } = require('../helpers')
+const { verifyPassword, hashPassword, encodeToken, verifyToken } = require('../helpers')
 
 class UserController {
   static async register(req, res, next) {
@@ -11,8 +11,8 @@ class UserController {
       if (!email || !password) throw { message: "Email or Password must be provided" }
 
       const payload = {
-        email: email?.toLowerCase(),
-        password,
+        email: email.toLowerCase(),
+        password: hashPassword(password),
         role
       }
 
@@ -39,7 +39,7 @@ class UserController {
 
       const user = await User.findOne({
         where: {
-          email: email?.toLowerCase()
+          email: email.toLowerCase()
         }
       })
 
@@ -49,11 +49,8 @@ class UserController {
       if (!isValid) throw { message: "Invalid email or password" }
 
       const token = encodeToken({ id: user.id, email: user.email, role: user.role })
-      const data = { ...user.dataValues }
-      delete data.password
 
       return res.status(200).json({
-        data,
         access_token: token,
         message: "Successfully login"
       })
@@ -67,17 +64,13 @@ class UserController {
   static async checkAuth(req, res, next) {
     try {
       const userData = verifyToken(req.headers.authorization);
-      let user = await User.findOne({ where: { id: userData?.email?.id } });
+      let user = await User.findOne({ where: { id: userData.email.id } });
       if (!user) throw { message: "User not authenticated" }
 
-      return res.status(200).json({
-        role: userData.email.role,
-        message: "Authenticate user",
-        status_code: 200,
-      })
+      next()
     } catch (error) {
       return res.status(400).json({
-        message: error.message || "Failed to authenticate",
+        message: "User not login",
         status_code: 400
       })
     }
