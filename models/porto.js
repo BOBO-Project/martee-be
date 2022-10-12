@@ -17,7 +17,7 @@ module.exports = (sequelize, DataTypes) => {
   Porto.init({
     name: DataTypes.STRING,
     category: DataTypes.STRING,
-    description: DataTypes.STRING,
+    description: DataTypes.STRING(100000),
   }, {
     sequelize,
     modelName: 'Porto',

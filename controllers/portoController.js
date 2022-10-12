@@ -154,7 +154,7 @@ class PortoController {
     try {
       const { id } = req.params;
       const incomingFiles = req.files;
-      const quantity = 3;
+      const quantity = 20;
 
       if (!incomingFiles || !incomingFiles.length) {
         throw { message: "Images required" }

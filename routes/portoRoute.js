@@ -14,7 +14,7 @@ routes.delete('/detail/:id', UserController.checkAuth, PortoController.checkIfPo
 routes.get('/detail/:id', PortoController.getPortoDetail)
 
 //Porto Details Image
-routes.post('/image/:id', UserController.checkAuth, multer({ storage: fileStorage, fileFilter }).array("image", 3), PortoController.addPortoImage)
+routes.post('/image/:id', UserController.checkAuth, multer({ storage: fileStorage, fileFilter }).array("image", 20), PortoController.addPortoImage)
 routes.patch('/image/:id/:img_id', UserController.checkAuth, multer({ storage: fileStorage, fileFilter }).single("image"), PortoController.updatePortoImages)
 routes.delete('/image/:id/:img_id', UserController.checkAuth, PortoController.deleteImage)
 routes.patch('/main_image/:id/:img_id', UserController.checkAuth, PortoController.checkIfImageExist, PortoController.setMainImage)
